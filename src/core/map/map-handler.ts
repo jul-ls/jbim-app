@@ -1,20 +1,22 @@
+import { MapScene } from './map-scene';
+
+//configurando pra só iniciar se nao foi iniciado
+//e pra fechar se nao foi fechado
+//react carrega 2x no strict mode, nao tem oq fazer...
 export const mapHandler = {
-  //configurando pra só iniciar se nao foi iniciado
-  //e pra fechar se nao foi fechado
+  viewer: null as MapScene | null,
 
-  //react carrega 2x no strict mode, nao tem oq fazer...
-  started: false,
-
-  start() {
-    if (!this.started) {
+  start(container: HTMLDivElement) {
+    if (!this.viewer) {
       console.log('Map started!');
-      this.started = true;
+      this.viewer = new MapScene(container);
     }
   },
   remove() {
-    if (this.started) {
+    if (this.viewer) {
       console.log('Map killed!');
-      this.started = false;
+      this.viewer.dispose(); //matando os leaks
+      this.viewer = null;
     }
   },
 };
