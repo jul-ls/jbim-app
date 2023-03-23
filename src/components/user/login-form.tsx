@@ -1,5 +1,7 @@
 import { FC } from 'react';
 import { useAppContext } from '../../middleware/context-provider';
+import { Button } from '@mui/material';
+import { Navigate } from 'react-router-dom';
 
 export const LoginForm: FC = () => {
   //acessando state
@@ -11,22 +13,16 @@ export const LoginForm: FC = () => {
     dispatch({ type: 'LOGIN' });
   };
 
-  const onLogout = () => {
-    console.log(`logged out`);
-    dispatch({ type: 'LOGOUT' });
-  };
+  if (state.user) {
+    return <Navigate to="/map" />;
+  }
 
   //se user tiver logado, mostra o app, senao, mostra login button
   return (
     <h1>
-      {state.user ? (
-        <>
-          <p>{state.user.displayName}</p>
-          <button onClick={onLogout}>Logout</button>
-        </>
-      ) : (
-        <button onClick={onLogin}>Login</button>
-      )}
+      <Button variant="outlined" onClick={onLogin}>
+        Log in
+      </Button>
     </h1>
   );
 };
