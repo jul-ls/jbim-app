@@ -55,14 +55,16 @@ export const MapViewer: FC = () => {
       {isCreating && (
         <div className="overlay">
           <p>Right click to create a new building or</p>
-          <Button onClick={onToggleCreate}>cancel</Button>
+          <Button variant="contained" color="success" onClick={onToggleCreate}>
+            cancel
+          </Button>
         </div>
       )}
-      <div className="top-navbar">
-        <h1>Hello map viewer!</h1>
-        <Button onClick={onToggleCreate}>Create building</Button>
-
-        <Button variant="outlined" onClick={onLogout}>
+      <div className="gis-button-container">
+        <Button variant="contained" color="success" onClick={onToggleCreate}>
+          Create building
+        </Button>
+        <Button variant="contained" color="success" onClick={onLogout}>
           Logout
         </Button>
       </div>

@@ -7,10 +7,11 @@ import { User } from 'firebase/auth';
 export const mapHandler = {
   viewer: null as MapScene | null,
 
-  start(container: HTMLDivElement) {
+  async start(container: HTMLDivElement, user: User) {
     if (!this.viewer) {
       console.log('Map started!');
       this.viewer = new MapScene(container);
+      await this.viewer.getAllBuildings(user);
     }
   },
   remove() {

@@ -20,7 +20,7 @@ export const LoginForm: FC = () => {
   //se user tiver logado, mostra o app, senao, mostra login button
   return (
     <h1>
-      <Button variant="outlined" onClick={onLogin}>
+      <Button variant="contained" color="success" onClick={onLogin}>
         Log in
       </Button>
     </h1>
