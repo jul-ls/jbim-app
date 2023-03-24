@@ -8,8 +8,8 @@ export const MapViewer: FC = () => {
   const [state, dispatch] = useAppContext();
 
   const containerRef = useRef(null);
+  const thumbnailRef = useRef(null);
   const [isCreating, setIsCreating] = useState(false);
-
   const { user } = state;
 
   const onToggleCreate = () => {
@@ -24,11 +24,10 @@ export const MapViewer: FC = () => {
   };
 
   useEffect(() => {
-    //onde o mapbox é renderizado
     const container = containerRef.current;
-    //se container está aberto e user logado
     if (container && user) {
-      dispatch({ type: 'START_MAP', payload: { container, user } });
+      const thumbnail = thumbnailRef.current;
+      dispatch({ type: 'START_MAP', payload: { container, user, thumbnail } });
     }
 
     //funcao quando o componente é destruido
@@ -48,25 +47,21 @@ export const MapViewer: FC = () => {
 
   return (
     <>
-      <h1>Welcome to the map viewer!</h1>
-
       <div
-        onContextMenu={onCreate}
         className="full-screen"
+        onContextMenu={onCreate}
         ref={containerRef}
-      ></div>
+      />
       {isCreating && (
         <div className="overlay">
-          <p>Right click to create a new Building or </p>
-          <Button variant="outlined" onClick={onToggleCreate}>
-            cancel
-          </Button>
+          <p>Right click to create a new building or</p>
+          <Button onClick={onToggleCreate}>cancel</Button>
         </div>
       )}
-      <div className="gis-button-container">
-        <Button variant="outlined" onClick={onToggleCreate}>
-          Create Building
-        </Button>
+      <div className="top-navbar">
+        <h1>Hello map viewer!</h1>
+        <Button onClick={onToggleCreate}>Create building</Button>
+
         <Button variant="outlined" onClick={onLogout}>
           Logout
         </Button>

@@ -1,28 +1,28 @@
-import * as OBC from 'openbim-components';
-import { MAPBOX_KEY } from '../../config';
-import { GisParameters, LngLat, Building } from '../../types';
-import * as MAPBOX from 'mapbox-gl';
 import * as THREE from 'three';
-import { User } from 'firebase/auth';
+import * as OBC from 'openbim-components';
+import * as MAPBOX from 'mapbox-gl';
 import { CSS2DObject } from 'three/examples/jsm/renderers/CSS2DRenderer';
+import { GisParameters, LngLat, Building } from '../../types';
+import { MAPBOX_KEY } from '../../config';
+import { User } from 'firebase/auth';
+//import { MapDatabase } from './map-database';
 
 export class MapScene {
   private components = new OBC.Components();
   private readonly style = 'mapbox://styles/mapbox/dark-v10';
   private map: MAPBOX.Map;
-  private center: LngLat = { lat: 0, lng: 0 };
   private clickedCoordinates: LngLat = { lat: 0, lng: 0 };
+  private center: LngLat = { lat: 0, lng: 0 };
   private labels: { [id: string]: CSS2DObject } = {};
+  //private database = new MapDatabase();
 
   constructor(container: HTMLDivElement) {
-    const configuration = this.getConfig(container);
-    this.map = this.createMap(configuration);
-    this.initializeComponents(configuration);
-    this.setupScene();
+    const config = this.getConfig(container);
+    this.map = this.createMap(config);
+    this.initializeComponent(config);
+    this.createScene();
   }
 
-  //pra evitar memory leaks, dispose
-  //forçando o garbage collector
   dispose() {
     this.components.dispose();
     (this.map as any) = null;
@@ -35,24 +35,35 @@ export class MapScene {
     this.labels = {};
   }
 
-  addBuilding(user: User) {
+  async getAllBuildings(user: User) {
+    //const buildings = await this.database.getBuildings(user);
+    if (!this.components) return;
+    //this.addToScene(buildings);
+  }
+
+  async addBuilding(user: User) {
     const { lat, lng } = this.clickedCoordinates;
     const userID = user.uid;
     const building = { userID, lat, lng, uid: '' };
+    //building.uid = await this.database.add(building);
     this.addToScene([building]);
   }
 
   private addToScene(buildings: Building[]) {
     for (const building of buildings) {
       const { uid, lng, lat } = building;
-      const htmlElement = this.createHtmlElement();
+
+      const htmlElement = this.createHTMLElement();
+
       const label = new CSS2DObject(htmlElement);
 
       const center = MAPBOX.MercatorCoordinate.fromLngLat(
         { ...this.center },
         0
       );
+
       const units = center.meterInMercatorCoordinateUnits();
+
       const model = MAPBOX.MercatorCoordinate.fromLngLat({ lng, lat }, 0);
       model.x /= units;
       model.y /= units;
@@ -66,29 +77,28 @@ export class MapScene {
     }
   }
 
-  private createHtmlElement() {
+  private createHTMLElement() {
     const div = document.createElement('div');
-    div.textContent = '🏠';
+    div.textContent = '🏢';
     div.classList.add('thumbnail');
     return div;
   }
 
-  private initializeComponents(config: GisParameters) {
+  private initializeComponent(config: GisParameters) {
     this.components.scene = new OBC.SimpleScene(this.components);
     this.components.camera = new OBC.MapboxCamera();
     this.components.renderer = this.createRenderer(config);
     this.components.init();
   }
 
-  private createRenderer(config: GisParameters) {
-    const map = this.createMap(config);
-    const coords = this.getCoordinates(config);
-    return new OBC.MapboxRenderer(this.components, this.map, coords);
-  }
-
   private getCoordinates(config: GisParameters) {
     const merc = MAPBOX.MercatorCoordinate;
     return merc.fromLngLat(config.center, 0);
+  }
+
+  private createRenderer(config: GisParameters) {
+    const coords = this.getCoordinates(config);
+    return new OBC.MapboxRenderer(this.components, this.map, coords);
   }
 
   private createMap(config: GisParameters) {
@@ -97,7 +107,7 @@ export class MapScene {
       style: this.style,
       antialias: true,
     });
-    map.on('contextMenu', this.storeMousePosition);
+    map.on('contextmenu', this.storeMousePosition);
     return map;
   }
 
@@ -105,15 +115,15 @@ export class MapScene {
     this.clickedCoordinates = { ...event.lngLat };
   };
 
-  private setupScene() {
+  private createScene() {
     const scene = this.components.scene.get();
     scene.background = null;
-    const dirLight1 = new THREE.DirectionalLight(0xffffff);
-    dirLight1.position.set(0, -70, 100).normalize();
-    scene.add(dirLight1);
-    const dirLight2 = new THREE.DirectionalLight(0xffffff);
-    dirLight2.position.set(0, 70, 100).normalize();
-    scene.add(dirLight2);
+    const directionalLight = new THREE.DirectionalLight(0xffffff);
+    directionalLight.position.set(0, -70, 100).normalize();
+    scene.add(directionalLight);
+    const directionalLight2 = new THREE.DirectionalLight(0xffffff);
+    directionalLight2.position.set(0, 70, 100).normalize();
+    scene.add(directionalLight2);
   }
 
   //coordenadas em budapeste
