@@ -1,4 +1,5 @@
 import { MapScene } from './map-scene';
+import { User } from 'firebase/auth';
 
 //configurando pra só iniciar se nao foi iniciado
 //e pra fechar se nao foi fechado
@@ -17,6 +18,12 @@ export const mapHandler = {
       console.log('Map killed!');
       this.viewer.dispose(); //matando os leaks
       this.viewer = null;
+    }
+  },
+
+  addBuilding(user: User) {
+    if (this.viewer) {
+      this.viewer.addBuilding(user);
     }
   },
 };

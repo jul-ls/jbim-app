@@ -1,18 +1,34 @@
-import { FC, useEffect, useRef } from 'react';
+import { FC, useEffect, useRef, useState } from 'react';
 import { useAppContext } from '../../middleware/context-provider';
 import { Navigate } from 'react-router-dom';
 import { Button } from '@mui/material';
+import './map-viewer.css';
 
 export const MapViewer: FC = () => {
   const [state, dispatch] = useAppContext();
-  const canvasRef = useRef(null);
+
+  const containerRef = useRef(null);
+  const [isCreating, setIsCreating] = useState(false);
+
+  const { user } = state;
+
+  const onToggleCreate = () => {
+    setIsCreating(!isCreating);
+  };
+
+  const onCreate = () => {
+    if (isCreating) {
+      dispatch({ type: 'ADD_BUILDING', payload: user });
+      setIsCreating(false);
+    }
+  };
 
   useEffect(() => {
     //onde o mapbox é renderizado
-    const canvas = canvasRef.current;
-    //se canvas está aberto e user logado
-    if (canvas && state.user) {
-      dispatch({ type: 'START_MAP', payload: canvas });
+    const container = containerRef.current;
+    //se container está aberto e user logado
+    if (container && user) {
+      dispatch({ type: 'START_MAP', payload: { container, user } });
     }
 
     //funcao quando o componente é destruido
@@ -22,7 +38,7 @@ export const MapViewer: FC = () => {
   }, []);
 
   //se nao tem usuário, volta pra login page
-  if (!state.user) {
+  if (!user) {
     return <Navigate to="/login" />;
   }
 
@@ -33,10 +49,28 @@ export const MapViewer: FC = () => {
   return (
     <>
       <h1>Welcome to the map viewer!</h1>
-      <Button variant="outlined" onClick={onLogout}>
-        Logout
-      </Button>
-      <div className="full-screen" ref={canvasRef}></div>
+
+      <div
+        onContextMenu={onCreate}
+        className="full-screen"
+        ref={containerRef}
+      ></div>
+      {isCreating && (
+        <div className="overlay">
+          <p>Right click to create a new Building or </p>
+          <Button variant="outlined" onClick={onToggleCreate}>
+            cancel
+          </Button>
+        </div>
+      )}
+      <div className="gis-button-container">
+        <Button variant="outlined" onClick={onToggleCreate}>
+          Create Building
+        </Button>
+        <Button variant="outlined" onClick={onLogout}>
+          Logout
+        </Button>
+      </div>
     </>
   );
 };
