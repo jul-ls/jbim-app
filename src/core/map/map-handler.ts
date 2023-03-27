@@ -1,5 +1,6 @@
 import { MapScene } from './map-scene';
 import { User } from 'firebase/auth';
+import { Events } from '../../middleware/event-handler';
 
 //configurando pra só iniciar se nao foi iniciado
 //e pra fechar se nao foi fechado
@@ -7,10 +8,10 @@ import { User } from 'firebase/auth';
 export const mapHandler = {
   viewer: null as MapScene | null,
 
-  async start(container: HTMLDivElement, user: User) {
+  async start(container: HTMLDivElement, user: User, events: Events) {
     if (!this.viewer) {
       console.log('Map started!');
-      this.viewer = new MapScene(container);
+      this.viewer = new MapScene(container, events);
       await this.viewer.getAllBuildings(user);
     }
   },
