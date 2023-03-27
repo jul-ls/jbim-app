@@ -1,25 +1,61 @@
-import { FC } from 'react';
-import { Button } from '@mui/material';
+import { FC, useState } from 'react';
+import { Box, CssBaseline } from '@mui/material';
 import { useAppContext } from '../../middleware/context-provider';
 import { Navigate } from 'react-router-dom';
+import { BuildingTopBar } from './building-topbar';
+import { BuildingDrawer } from './building-drawer';
+import { getDrawerHeader } from './mui-utils';
+import { BuildingFrontMenu } from './front-menu/building-front-menu';
 
 export const BuildingViewer: FC = () => {
-  const [state, dispatch] = useAppContext();
-  const { building } = state;
+  const [sideOpen, setSideOpen] = useState(false);
+  const [frontOpen, setFrontOpen] = useState(false);
+  const [width] = useState(240); //de acordo com o material ui
 
-  const onCloseBuilding = () => {
-    dispatch({ type: 'KILL_BUILDING' });
-  };
+  const [{ user, building }] = useAppContext();
 
   if (!building) {
     return <Navigate to={'/map'} />;
   }
+
+  const toggleDrawer = (active: boolean) => {
+    setSideOpen(active);
+  };
+
+  const toggleFrontMenu = (active: boolean) => {
+    setFrontOpen(active);
+  };
+
+  const DrawerHeader = getDrawerHeader();
+
   return (
-    <>
-      <h1>this is a buildingviewer</h1>
-      <Button variant="contained" color="success" onClick={onCloseBuilding}>
-        Close Building
-      </Button>
-    </>
+    <Box sx={{ display: 'flex' }}>
+      <CssBaseline />
+
+      <BuildingTopBar
+        width={width}
+        open={sideOpen}
+        onOpen={() => toggleDrawer(true)}
+      />
+
+      <BuildingDrawer
+        width={width}
+        open={sideOpen}
+        onClose={() => toggleDrawer(false)}
+        onToggleMenu={() => toggleFrontMenu(true)}
+      />
+
+      <Box component="main" sx={{ flexGrow: 1, p: 3 }}>
+        <DrawerHeader />
+
+        <BuildingFrontMenu
+          onToggleMenu={() => toggleFrontMenu(false)}
+          open={frontOpen}
+          mode="BuildingInfo"
+        />
+
+        <h1>Hello building viewer!</h1>
+      </Box>
+    </Box>
   );
 };
