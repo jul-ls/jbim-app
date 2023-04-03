@@ -7,7 +7,8 @@ import {
 } from 'firebase/auth';
 import { deleteDoc, doc, getFirestore, updateDoc } from 'firebase/firestore';
 import { Events } from '../../middleware/event-handler';
-import { Building } from '../../types';
+import { Building, Model } from '../../types';
+import { deleteObject, getStorage, ref, uploadBytes } from 'firebase/storage';
 
 export const databaseHandler = {
   login: () => {
@@ -33,5 +34,26 @@ export const databaseHandler = {
     await updateDoc(doc(dbInstance, 'buildings', building.uid), {
       ...building,
     });
+  },
+
+  uploadModel: async (
+    model: Model,
+    file: File,
+    building: Building,
+    events: Events
+  ) => {
+    const appInstance = getApp();
+    const storageInstance = getStorage(appInstance);
+    const fileRef = ref(storageInstance, model.id);
+    await uploadBytes(fileRef, file);
+    events.trigger({ type: 'UPDATE_BUILDING', payload: building });
+  },
+
+  deleteModel: async (model: Model, building: Building, events: Events) => {
+    const appInstance = getApp();
+    const storageInstance = getStorage(appInstance);
+    const fileRef = ref(storageInstance, model.id);
+    await deleteObject(fileRef);
+    events.trigger({ type: 'UPDATE_BUILDING', payload: building });
   },
 };

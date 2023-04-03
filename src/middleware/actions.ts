@@ -9,6 +9,8 @@ export const ActionList = [
   'KILL_BUILDING',
   'UPDATE_BUILDING',
   'DELETE_BUILDING',
+  'UPLOAD_MODEL',
+  'DELETE_MODEL',
 ] as const;
 
 export type ActionType = typeof ActionList[number];
