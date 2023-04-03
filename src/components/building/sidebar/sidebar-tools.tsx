@@ -5,20 +5,31 @@ import ListIcon from '@mui/icons-material/ViewList';
 import MapIcon from '@mui/icons-material/Map';
 import DeleteIcon from '@mui/icons-material/Delete';
 import LogoutIcon from '@mui/icons-material/Logout';
+import HolidayVillageIcon from '@mui/icons-material/HolidayVillage';
+import { FrontMenuMode } from '../types';
 
 export function getSidebarTools(
   state: State,
   dispatch: React.Dispatch<Action>,
-  toggleMenu: () => void
+  toggleMenu: (active: boolean, mode?: FrontMenuMode) => void
 ): Tool[] {
   return [
     {
       name: 'Info',
       icon: <ListIcon />,
       action: () => {
-        toggleMenu();
+        toggleMenu(true, 'BuildingInfo');
       },
     },
+
+    {
+      name: 'Model List',
+      icon: <HolidayVillageIcon />,
+      action: () => {
+        toggleMenu(true, 'ModelList');
+      },
+    },
+
     {
       name: 'Back to map',
       icon: <MapIcon />,
