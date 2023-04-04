@@ -29,11 +29,6 @@ export const MapViewer: FC = () => {
       const thumbnail = thumbnailRef.current;
       dispatch({ type: 'START_MAP', payload: { container, user, thumbnail } });
     }
-
-    //funcao quando o componente é destruido
-    return () => {
-      dispatch({ type: 'KILL_MAP' });
-    };
   }, []);
 
   //se nao tem usuário, volta pra login page
