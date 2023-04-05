@@ -1,8 +1,8 @@
 import * as OBC from 'openbim-components';
 import * as THREE from 'three';
+import { downloadZip } from 'client-zip';
 import { BuildingDatabase } from './building-database';
 import { Building } from '../../types';
-import { downloadZip } from 'client-zip';
 import { unzip } from 'unzipit';
 
 export class BuildingScene {
@@ -11,13 +11,20 @@ export class BuildingScene {
   private database = new BuildingDatabase();
 
   constructor(container: HTMLDivElement, building: Building) {
-    //setup da scene
     this.components = new OBC.Components();
 
-    const sceneComponent = new OBC.SimpleScene(this.components);
-    const scene = sceneComponent.get();
+    this.components.scene = new OBC.SimpleScene(this.components);
+    this.components.renderer = new OBC.SimpleRenderer(
+      this.components,
+      container
+    );
 
-    scene.background = null;
+    const scene = this.components.scene.get();
+    scene.background = new THREE.Color();
+
+    this.components.camera = new OBC.SimpleCamera(this.components);
+    this.components.raycaster = new OBC.SimpleRaycaster(this.components);
+    this.components.init();
 
     const directionalLight = new THREE.DirectionalLight();
     directionalLight.position.set(5, 10, 3);
@@ -28,14 +35,6 @@ export class BuildingScene {
     ambientLight.intensity = 0.5;
     scene.add(ambientLight);
 
-    this.components.scene = sceneComponent;
-    this.components.renderer = new OBC.SimpleRenderer(
-      this.components,
-      container
-    );
-    this.components.camera = new OBC.SimpleCamera(this.components);
-    this.components.init();
-
     const grid = new OBC.SimpleGrid(this.components);
     this.components.tools.add(grid);
 
@@ -43,8 +42,8 @@ export class BuildingScene {
     this.components.tools.add(this.fragments);
     this.loadAllModels(building);
   }
+
   dispose() {
-    //limpando leaks?
     this.components.dispose();
     (this.components as any) = null;
     (this.fragments as any) = null;
@@ -52,8 +51,13 @@ export class BuildingScene {
 
   async convertIfcToFragments(ifc: File) {
     let fragments = new OBC.Fragments(this.components);
+
     fragments.ifcLoader.settings.optionalCategories.length = 0;
-    fragments.ifcLoader.settings.wasm = { path: '../../', absolute: false };
+
+    fragments.ifcLoader.settings.wasm = {
+      path: '../../',
+      absolute: false,
+    };
 
     fragments.ifcLoader.settings.webIfc = {
       COORDINATE_TO_ORIGIN: true,
@@ -66,8 +70,10 @@ export class BuildingScene {
 
     fragments.dispose();
     (fragments as any) = null;
+
     return file as File;
   }
+
   private async serializeFragments(model: OBC.FragmentGroup) {
     const files = [];
     for (const frag of model.fragments) {
