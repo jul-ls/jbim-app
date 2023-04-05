@@ -23,9 +23,14 @@ export const databaseHandler = {
   },
 
   deleteBuilding: async (building: Building, events: Events) => {
-    const id = building.uid;
-    const dbInstance = getFirestore(getApp());
+    const app = getApp();
+    const dbInstance = getFirestore();
     await deleteDoc(doc(dbInstance, 'buildings', building.uid));
+    const storageInstance = getStorage(app);
+    for (const model of building.models) {
+      const fileRef = ref(storageInstance, model.id);
+      await deleteObject(fileRef);
+    }
     events.trigger({ type: 'KILL_BUILDING' });
   },
 
