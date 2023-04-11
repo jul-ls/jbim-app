@@ -14,12 +14,13 @@ const root = ReactDOM.createRoot(
 );
 
 const firebaseConfig = {
-  apiKey: 'AIzaSyDyU0HX-JIcNcTGkGW6-wqqlZeM4LdP5jM',
-  authDomain: 'jbim-app.firebaseapp.com',
-  projectId: 'jbim-app',
-  storageBucket: 'jbim-app.appspot.com',
-  messagingSenderId: '90182938991',
-  appId: '1:90182938991:web:d7c09412d039fb4838b89a',
+  apiKey: 'AIzaSyBL5RNhR45VUeUZ4btUk-u6JubVXBNbo6U',
+  authDomain: 'new-jbim.firebaseapp.com',
+  projectId: 'new-jbim',
+  storageBucket: 'new-jbim.appspot.com',
+  messagingSenderId: '1016346023000',
+  appId: '1:1016346023000:web:cbb8dbccb3b74eda03662d',
+  measurementId: 'G-72L6K6D901',
 };
 
 initializeApp(firebaseConfig);
