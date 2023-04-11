@@ -1,12 +1,12 @@
-import { ModelDatabase } from './dexie-utils';
-import { getApp } from 'firebase/app';
+import { ModelDatabase } from "./dexie-utils";
+import { getApp } from "firebase/app";
 import {
   FirebaseStorage,
   getDownloadURL,
   getStorage,
   ref,
-} from 'firebase/storage';
-import { Building } from '../../types';
+} from "firebase/storage";
+import { Building } from "../../types";
 
 // CORS problem solution: https://stackoverflow.com/a/58613527
 export class BuildingDatabase {
@@ -17,13 +17,15 @@ export class BuildingDatabase {
   }
 
   async getModels(building: Building) {
+    await this.db.open();
     const appInstance = getApp();
     const instance = getStorage(appInstance);
 
-    const urls: string[] = [];
+    const urls: { id: string; url: string }[] = [];
     for (const model of building.models) {
       const url = await this.getModelURL(instance, model.id);
-      urls.push(url);
+      const id = model.id;
+      urls.push({ url, id });
     }
 
     this.db.close();
@@ -41,11 +43,13 @@ export class BuildingDatabase {
     this.db.close();
   }
 
-  async deleteModel(id: string) {
+  async deleteModels(ids: string[]) {
     await this.db.open();
-    if (this.isModelCached(id)) {
-      localStorage.removeItem(id);
-      await this.db.models.where('id').equals(id).delete();
+    for (const id of ids) {
+      if (this.isModelCached(id)) {
+        localStorage.removeItem(id);
+        await this.db.models.where("id").equals(id).delete();
+      }
     }
     this.db.close();
   }
@@ -62,14 +66,14 @@ export class BuildingDatabase {
     const fileRef = ref(instance, id);
     const url = await getDownloadURL(fileRef);
     await this.cacheModel(id, url);
-    console.log('Got model from firebase!');
+    console.log("Got model from firebase!");
     return url;
   }
 
   private async getModelFromLocalCache(id: string) {
-    const found = await this.db.models.where('id').equals(id).toArray();
+    const found = await this.db.models.where("id").equals(id).toArray();
     const file = found[0].file;
-    console.log('Got model from local cache!');
+    console.log("Got model from local cache!");
     return URL.createObjectURL(file);
   }
 

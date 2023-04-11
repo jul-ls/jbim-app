@@ -1,23 +1,25 @@
-import { BrowserRouter as Router, Routes, Route, Link } from 'react-router-dom';
-import './App.css';
-import { BuildingViewer } from './components/building/building-viewer';
-import { MapViewer } from './components/map/map-viewer';
-import { LoginForm } from './components/user/login-form';
-import { ContextProvider } from './middleware/context-provider';
+import "./App.css";
+import { BrowserRouter as Router, Routes, Route } from "react-router-dom";
+import { Dashboard } from "./components/home";
+import { BuildingViewer } from "./components/building/building-viewer";
+import { MapViewer } from "./components/map/map-viewer";
+import { ContextProvider } from "./middleware/context-provider";
 
 function App() {
   return (
     <ContextProvider>
       <Router>
-        <Routes>
-          <Route path="/building" element={<BuildingViewer />} />
-          <Route path="/map" element={<MapViewer />} />
-          <Route path="/login" element={<LoginForm />} />
-          <Route path="/" element={<LoginForm />} />
-        </Routes>
+        <div>
+          <Routes>
+            <Route path="/building" element={<BuildingViewer />} />
+            <Route path="/map" element={<MapViewer />} />
+            <Route path="/login" element={<Dashboard />} />
+            <Route path="/" element={<Dashboard />} />
+          </Routes>
+        </div>
       </Router>
     </ContextProvider>
   );
 }
-//rota base redireciona pra login msm
+
 export default App;

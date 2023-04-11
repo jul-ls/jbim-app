@@ -1,4 +1,4 @@
-import { Dexie } from 'dexie';
+import { Dexie } from "dexie";
 
 interface IModel {
   id: string;
@@ -9,9 +9,9 @@ export class ModelDatabase extends Dexie {
   models!: Dexie.Table<IModel, number>;
 
   constructor() {
-    super('ModelDatabase');
+    super("ModelDatabase");
     this.version(2).stores({
-      models: 'id, file',
+      models: "id, file",
     });
   }
 }

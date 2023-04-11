@@ -1,21 +1,28 @@
 export const ActionList = [
-  'LOGIN',
-  'LOGOUT',
-  'START_MAP',
-  'KILL_MAP',
-  'UPDATE_USER',
-  'ADD_BUILDING',
-  'OPEN_BUILDING',
-  'KILL_BUILDING',
-  'UPDATE_BUILDING',
-  'DELETE_BUILDING',
-  'UPLOAD_MODEL',
-  'DELETE_MODEL',
-  'START_BUILDING',
-  'CLOSE_BUILDING',
+  "LOGIN",
+  "LOGOUT",
+  "UPDATE_USER",
+  "START_MAP",
+  "REMOVE_MAP",
+  "ADD_BUILDING",
+  "OPEN_BUILDING",
+  "START_BUILDING",
+  "DELETE_BUILDING",
+  "CLOSE_BUILDING",
+  "UPDATE_BUILDING",
+  "UPLOAD_MODEL",
+  "DELETE_MODEL",
+  "EXPLODE_MODEL",
+  "TOGGLE_CLIPPER",
+  "TOGGLE_DIMENSIONS",
+  "TOGGLE_FLOORPLAN",
+  "UPDATE_FLOORPLANS",
+  "UPDATE_PROPERTIES",
 ] as const;
 
-export type ActionType = typeof ActionList[number];
+type ActionListType = typeof ActionList;
+
+export type ActionType = ActionListType[number];
 
 export interface Action {
   type: ActionType;

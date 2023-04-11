@@ -1,44 +1,43 @@
-import { FC } from 'react';
-import { Box, TextField, Button } from '@mui/material';
-import { useAppContext } from '../../../../middleware/context-provider';
-import './building-info-menu.css';
+import { Button, TextField, Box } from "@mui/material";
+import { FC } from "react";
+import { useAppContext } from "../../../../middleware/context-provider";
+import "./front-menu-content.css";
 
 export const BuildingInfoMenu: FC<{
-  onToggleMenu: () => void;
+  onToggleMenu: (active: boolean) => void;
 }> = ({ onToggleMenu }) => {
   const [state, dispatch] = useAppContext();
 
   const { building } = state;
-
   if (!building) {
-    throw new Error('No building active!');
+    throw new Error("No building active!");
   }
 
   const onUpdateBuilding = (event: React.FormEvent<HTMLFormElement>) => {
     event.preventDefault();
     const data = new FormData(event.currentTarget);
     const newBuilding = { ...building } as any;
-    newBuilding.name = data.get('building-name') || building.name;
-
-    newBuilding.lng = data.get('building-lng') || building.lng;
-    newBuilding.lat = data.get('building-lat') || building.lat;
-    dispatch({ type: 'UPDATE_BUILDING', payload: newBuilding });
-    onToggleMenu();
+    newBuilding.name = data.get("building-name") || building.name;
+    newBuilding.lat = data.get("building-lat") || building.lat;
+    newBuilding.lng = data.get("building-lng") || building.lng;
+    dispatch({ type: "UPDATE_BUILDING", payload: newBuilding });
+    onToggleMenu(false);
   };
+
   return (
-    <Box component="form" onSubmit={onUpdateBuilding}>
+    <Box component="form" onSubmit={onUpdateBuilding} className="full-width">
       <div className="list-item">
         <TextField
+          required
           fullWidth
           id="building-id"
           label="Building ID"
           name="building-id"
           autoComplete="building-id"
-          defaultValue={building.uid}
+          value={building.uid}
           disabled={true}
         />
       </div>
-
       <div className="list-item">
         <TextField
           fullWidth
@@ -49,10 +48,10 @@ export const BuildingInfoMenu: FC<{
           defaultValue={building.name}
         />
       </div>
-
       <div className="list-item">
         <TextField
           fullWidth
+          required
           id="building-lng"
           label="Longitude"
           name="building-lng"
@@ -63,6 +62,7 @@ export const BuildingInfoMenu: FC<{
       <div className="list-item">
         <TextField
           fullWidth
+          required
           id="building-lat"
           label="Latitude"
           name="building-lat"
@@ -70,10 +70,9 @@ export const BuildingInfoMenu: FC<{
           defaultValue={building.lat}
         />
       </div>
-
       <div className="list-item">
         <Button type="submit" className="submit-button">
-          Update Building
+          Update building
         </Button>
       </div>
     </Box>

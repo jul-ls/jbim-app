@@ -1,15 +1,15 @@
-import { getApp } from 'firebase/app';
+import { getApp } from "firebase/app";
 import {
   getAuth,
   signInWithPopup,
   GoogleAuthProvider,
   signOut,
-} from 'firebase/auth';
-import { deleteDoc, doc, getFirestore, updateDoc } from 'firebase/firestore';
-import { Events } from '../../middleware/event-handler';
-import { Building, Model } from '../../types';
-import { getStorage, ref, uploadBytes, deleteObject } from 'firebase/storage';
-import { buildingHandler } from '../building/building-handler';
+} from "firebase/auth";
+import { deleteDoc, doc, getFirestore, updateDoc } from "firebase/firestore";
+import { Events } from "../../middleware/event-handler";
+import { Building, Model } from "../../types";
+import { getStorage, ref, uploadBytes, deleteObject } from "firebase/storage";
+import { buildingHandler } from "../building/building-handler";
 
 export const databaseHandler = {
   login: () => {
@@ -26,19 +26,22 @@ export const databaseHandler = {
   deleteBuilding: async (building: Building, events: Events) => {
     const id = building.uid;
     const dbInstance = getFirestore(getApp());
-    await deleteDoc(doc(dbInstance, 'buildings', id));
+    await deleteDoc(doc(dbInstance, "buildings", id));
     const appInstance = getApp();
     const storageInstance = getStorage(appInstance);
+    const ids: string[] = [];
     for (const model of building.models) {
+      ids.push(model.id);
       const fileRef = ref(storageInstance, model.id);
       await deleteObject(fileRef);
     }
-    events.trigger({ type: 'CLOSE_BUILDING' });
+    await buildingHandler.deleteModels(ids);
+    events.trigger({ type: "CLOSE_BUILDING" });
   },
 
   updateBuilding: async (building: Building) => {
     const dbInstance = getFirestore(getApp());
-    await updateDoc(doc(dbInstance, 'buildings', building.uid), {
+    await updateDoc(doc(dbInstance, "buildings", building.uid), {
       ...building,
     });
   },
@@ -53,7 +56,8 @@ export const databaseHandler = {
     const storageInstance = getStorage(appInstance);
     const fileRef = ref(storageInstance, model.id);
     await uploadBytes(fileRef, file);
-    events.trigger({ type: 'UPDATE_BUILDING', payload: building });
+    await buildingHandler.refreshModels(building, events);
+    events.trigger({ type: "UPDATE_BUILDING", payload: building });
   },
 
   deleteModel: async (model: Model, building: Building, events: Events) => {
@@ -61,7 +65,8 @@ export const databaseHandler = {
     const storageInstance = getStorage(appInstance);
     const fileRef = ref(storageInstance, model.id);
     await deleteObject(fileRef);
-
-    events.trigger({ type: 'UPDATE_BUILDING', payload: building });
+    await buildingHandler.deleteModels([model.id]);
+    await buildingHandler.refreshModels(building, events);
+    events.trigger({ type: "UPDATE_BUILDING", payload: building });
   },
 };

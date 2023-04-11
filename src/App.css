@@ -2,7 +2,12 @@
   margin: 0;
   padding: 0;
   box-sizing: border-box;
-  font-family: 'Roboto', Arial, Helvetica, sans-serif;
+  font-family: "Roboto", Helvetica, sans-serif;
+  --light-grey: #b4c7d7;
+}
+
+.hidden {
+  visibility: collapse;
 }
 
 .full-screen {
@@ -11,6 +16,10 @@
   width: 100vw;
   height: 100vh;
   position: absolute;
+}
+
+.full-width {
+  width: 100%;
 }
 
 .thumbnail {
@@ -25,4 +34,34 @@
 .thumbnail:hover {
   background-color: rgb(255, 255, 255);
   cursor: pointer;
+}
+
+/* Remove arrows from number inputs */
+input::-webkit-outer-spin-button,
+input::-webkit-inner-spin-button {
+  -webkit-appearance: none;
+  margin: 0;
+}
+
+.ifcjs-dimension-label {
+  background-color: black;
+  font-family: sans-serif;
+  color: white;
+  padding: 8px;
+  border-radius: 8px;
+  pointer-events: all;
+  transition: background-color 200ms ease-in-out;
+}
+
+.ifcjs-dimension-label:hover {
+  background-color: grey;
+}
+
+.ifcjs-dimension-preview {
+  background-color: #ffffff;
+  width: 2rem;
+  height: 2rem;
+  opacity: 0.3;
+  padding: 8px;
+  border-radius: 100%;
 }

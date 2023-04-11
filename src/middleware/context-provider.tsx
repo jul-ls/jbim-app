@@ -1,16 +1,16 @@
-import { executeCore } from './core-handler';
-import { Action, ActionList } from './actions';
-import { reducer } from './state-handler';
 import {
+  createContext,
+  useReducer,
   FC,
   PropsWithChildren,
-  useReducer,
-  createContext,
   useContext,
-} from 'react';
-import { initialState, State } from './state';
-import { Authenticator } from './authenticator';
-import { Events } from './event-handler';
+} from "react";
+import { Action, ActionList } from "./actions";
+import { reducer } from "./state-handler";
+import { initialState, State } from "./state";
+import { Authenticator } from "./authenticator";
+import { executeCore } from "./core-handler";
+import { Events } from "./event-handler";
 
 const appContext = createContext<[State, React.Dispatch<Action>]>([
   initialState,
@@ -20,19 +20,20 @@ const appContext = createContext<[State, React.Dispatch<Action>]>([
 export const ContextProvider: FC<PropsWithChildren> = ({ children }) => {
   const [state, setState] = useReducer(reducer, initialState);
 
+  const events = new Events();
+
   const dispatch = (value: Action) => {
     setState(value);
     executeCore(value, events);
   };
 
-  const events = new Events();
   for (const type of ActionList) {
     events.on(type, (payload: any) => {
-      setState({ type, payload });
+      const action = { type, payload };
+      dispatch(action);
     });
   }
-  //state e dispatch vao ser dadas a todo o app
-  //e dentro children
+
   return (
     <appContext.Provider value={[state, dispatch]}>
       <Authenticator />

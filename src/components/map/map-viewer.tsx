@@ -1,12 +1,11 @@
-import { FC, useEffect, useRef, useState } from 'react';
-import { useAppContext } from '../../middleware/context-provider';
-import { Navigate } from 'react-router-dom';
-import { Button } from '@mui/material';
-import './map-viewer.css';
+import { FC, useRef, useEffect, useState } from "react";
+import { Navigate } from "react-router-dom";
+import { useAppContext } from "../../middleware/context-provider";
+import { Button } from "@mui/material";
+import "./map-viewer.css";
 
 export const MapViewer: FC = () => {
   const [state, dispatch] = useAppContext();
-
   const containerRef = useRef(null);
   const thumbnailRef = useRef(null);
   const [isCreating, setIsCreating] = useState(false);
@@ -16,9 +15,13 @@ export const MapViewer: FC = () => {
     setIsCreating(!isCreating);
   };
 
+  const onLogout = () => {
+    dispatch({ type: "LOGOUT" });
+  };
+
   const onCreate = () => {
     if (isCreating) {
-      dispatch({ type: 'ADD_BUILDING', payload: user });
+      dispatch({ type: "ADD_BUILDING", payload: user });
       setIsCreating(false);
     }
   };
@@ -27,28 +30,18 @@ export const MapViewer: FC = () => {
     const container = containerRef.current;
     if (container && user) {
       const thumbnail = thumbnailRef.current;
-      dispatch({ type: 'START_MAP', payload: { container, user, thumbnail } });
+      dispatch({ type: "START_MAP", payload: { container, user, thumbnail } });
     }
-
-    //funcao componente destruido
-    return () => {
-      dispatch({ type: 'KILL_MAP' });
-    };
   }, []);
 
-  //se nao tem usuário, volta pra login page
   if (!user) {
     return <Navigate to="/login" />;
   }
 
   if (building) {
-    const url = `/building?id=${building.uid}`;
+    const url = `/building/?id=${building.uid}`;
     return <Navigate to={url} />;
   }
-
-  const onLogout = () => {
-    dispatch({ type: 'LOGOUT' });
-  };
 
   return (
     <>
@@ -60,18 +53,14 @@ export const MapViewer: FC = () => {
       {isCreating && (
         <div className="overlay">
           <p>Right click to create a new building or</p>
-          <Button variant="contained" color="success" onClick={onToggleCreate}>
-            cancel
-          </Button>
+          <Button onClick={onToggleCreate}>cancel</Button>
         </div>
       )}
-      <div className="gis-button-container">
-        <Button variant="contained" color="success" onClick={onToggleCreate}>
+      <div className="button-container">
+        <Button variant="contained" onClick={onToggleCreate}>
           Create building
         </Button>
-        <Button variant="contained" color="success" onClick={onLogout}>
-          Logout
-        </Button>
+        <Button onClick={onLogout}>Log out</Button>
       </div>
     </>
   );

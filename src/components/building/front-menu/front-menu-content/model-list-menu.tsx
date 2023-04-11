@@ -1,15 +1,15 @@
+import { Button, IconButton } from '@mui/material';
 import { FC } from 'react';
 import { useAppContext } from '../../../../middleware/context-provider';
-import './building-info-menu.css';
-import { IconButton } from '@mui/material';
 import DeleteIcon from '@mui/icons-material/Clear';
-import Button from '@mui/material/Button';
+import './front-menu-content.css';
 
 export const ModelListMenu: FC = () => {
-  const [{ building, user }, dispatch] = useAppContext();
+  const [state, dispatch] = useAppContext();
 
+  const { building, user } = state;
   if (!building || !user) {
-    throw new Error('Error: building or user not found!');
+    throw new Error('Error: building or user not found');
   }
 
   const onUploadModel = () => {
@@ -17,21 +17,22 @@ export const ModelListMenu: FC = () => {
     input.type = 'file';
     input.style.visibility = 'hidden';
     document.body.appendChild(input);
-
     input.onchange = () => {
       console.log(input.files);
-      //uploading
       if (input.files && input.files.length) {
         const file = input.files[0];
+        if (!file.name.includes('.ifc')) return;
         const newBuilding = { ...building };
-        //unique iq usando milisseconds
-        const { name } = file;
-        const id = `${name}-${performance.now()}`;
-        const model = { name, id };
+        const id = `${file.name}-${performance.now()}`;
+        const model = { name: file.name, id };
         newBuilding.models.push(model);
         dispatch({
           type: 'UPLOAD_MODEL',
-          payload: { model, file, building: newBuilding },
+          payload: {
+            building: newBuilding,
+            file,
+            model,
+          },
         });
       }
       input.remove();
@@ -46,14 +47,12 @@ export const ModelListMenu: FC = () => {
     newBuilding.models = newBuilding.models.filter((model) => model.id !== id);
     dispatch({
       type: 'DELETE_MODEL',
-      payload: { model, building: newBuilding },
+      payload: { building: newBuilding, model },
     });
   };
 
-  //se tem length significa que existe algum modelo
-  //ternary abaixo usando ? ():()
   return (
-    <div>
+    <div className="full-width">
       {building.models.length ? (
         building.models.map((model) => (
           <div className="list-item" key={model.id}>
@@ -67,7 +66,9 @@ export const ModelListMenu: FC = () => {
         <p>This building has no models!</p>
       )}
       <div className="list-item">
-        <Button onClick={onUploadModel}>Upload Model</Button>
+        <Button onClick={onUploadModel} className="submit-button">
+          Upload model
+        </Button>
       </div>
     </div>
   );

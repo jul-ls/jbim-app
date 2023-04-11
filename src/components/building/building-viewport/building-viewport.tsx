@@ -1,5 +1,5 @@
-import { FC, useRef, useEffect, useState } from 'react';
-import { useAppContext } from '../../../middleware/context-provider';
+import { FC, useRef, useEffect, useState } from "react";
+import { useAppContext } from "../../../middleware/context-provider";
 
 export const BuildingViewport: FC = () => {
   const [state, dispatch] = useAppContext();
@@ -9,7 +9,7 @@ export const BuildingViewport: FC = () => {
   useEffect(() => {
     const container = containerRef.current;
     if (container && user) {
-      dispatch({ type: 'START_BUILDING', payload: { container, building } });
+      dispatch({ type: "START_BUILDING", payload: { container, building } });
     }
   }, []);
 

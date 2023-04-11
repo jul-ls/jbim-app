@@ -1,4 +1,5 @@
-import { Building } from '../../types';
+import { getApp } from "firebase/app";
+import { User } from "firebase/auth";
 import {
   addDoc,
   collection,
@@ -6,12 +7,11 @@ import {
   onSnapshot,
   query,
   where,
-} from 'firebase/firestore';
-import { getApp } from 'firebase/app';
-import { User } from 'firebase/auth';
+} from "firebase/firestore";
+import { Building } from "../../types";
 
 export class MapDatabase {
-  private readonly buildings = 'buildings';
+  private readonly buildings = "buildings";
 
   async add(building: Building) {
     const dbInstance = getFirestore(getApp());
@@ -30,8 +30,9 @@ export class MapDatabase {
     const dbInstance = getFirestore(getApp());
     const q = query(
       collection(dbInstance, this.buildings),
-      where('userID', '==', user.uid)
+      where("userID", "==", user.uid)
     );
+
     return new Promise<Building[]>((resolve) => {
       const unsubscribe = onSnapshot(q, (snapshot) => {
         const result: Building[] = [];

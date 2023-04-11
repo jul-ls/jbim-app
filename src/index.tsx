@@ -3,7 +3,6 @@ import ReactDOM from 'react-dom/client';
 import App from './App';
 import { initializeApp } from 'firebase/app';
 
-//fontes do mui
 import '@fontsource/roboto/300.css';
 import '@fontsource/roboto/400.css';
 import '@fontsource/roboto/500.css';
@@ -13,6 +12,7 @@ const root = ReactDOM.createRoot(
   document.getElementById('root') as HTMLElement
 );
 
+// Your web app's Firebase configuration
 const firebaseConfig = {
   apiKey: 'AIzaSyBL5RNhR45VUeUZ4btUk-u6JubVXBNbo6U',
   authDomain: 'new-jbim.firebaseapp.com',
@@ -23,6 +23,7 @@ const firebaseConfig = {
   measurementId: 'G-72L6K6D901',
 };
 
+// Initialize Firebase
 initializeApp(firebaseConfig);
 
 root.render(
